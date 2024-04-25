@@ -1,4 +1,5 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -22,6 +23,37 @@ class Room {
   rentRoom(rentalInfo) {
     this.rentCount++;
     this.rentalInfo.push(rentalInfo);
+    // Send email notification
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: "abdiaziz.jamal3414@gmail.com",
+          pass: "tgns ykak imfm isej"
+        }
+      });
+
+  const mailOptions = {
+    from: "abdiaziz.jamal3414@gmail.com",
+    to: rentalInfo.tenantEmail, // corrected here // replace with actual recipient email
+    subject: 'Room Rental Confirmation',
+    // text: `This email confirms your rental of room ${this.floorNumber}-${this.roomNumber} from ${rentalInfo.startDate} to ${rentalInfo.endDate}.`,
+    // html, 
+    // `<p>Dear ${rentalInfo.tenantName},</p>
+    // <p>This email confirms your rental of room ${this.floorNumber}-${this.roomNumber} from ${rentalInfo.startDate} to ${rentalInfo.endDate}.</p>
+    // <p>Thank you for choosing our rental service.</p>`,
+    html: `<h2>Dear ${rentalInfo.tenantName},</h2>
+    <p>This email confirms your rental of room in Floor  ${this.floorNumber}-room ${this.roomNumber} from ${rentalInfo.startDate} to ${rentalInfo.endDate}.</p>
+    <p>Thank you for choosing our rental service.</p>`,
+
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
   }
 
   releaseRoom() {
@@ -52,8 +84,9 @@ app.get('/api/rooms', (req, res) => {
 });
 
 // Rent a room
+// Rent a room
 app.post('/api/rooms/rent', (req, res) => {
-  const { floor, room, tenantName, startDate, endDate, price } = req.body;
+  const { floor, room, tenantName, startDate, endDate, price, tenantEmail } = req.body; // corrected here
 
   const selectedRoom = building.floors[floor - 1][room - 1];
 
@@ -62,15 +95,16 @@ app.post('/api/rooms/rent', (req, res) => {
   } else {
     const rentalInfo = {
       tenantName,
+      tenantEmail, // corrected here
       startDate,
       endDate,
       price,
     };
 
     selectedRoom.rentRoom(rentalInfo);
-    res.json({ message: 'Room rented successfully.' });
+    res.json({ message: 'Room rented successfully. An email confirmation has been sent.'  });
   }
-});
+});   
 
 // Release a room
 app.post('/api/rooms/release', (req, res) => {
