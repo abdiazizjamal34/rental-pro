@@ -1,10 +1,16 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
+
 const bodyParser = require('body-parser');
 
 const app = express();
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+
+
 
 // Room rental data
 const building = {
@@ -27,8 +33,8 @@ class Room {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: "abdiaziz.jamal3414@gmail.com",
-          pass: "tgns ykak imfm isej"
+          user: process.env.EMAIL, // replace with actual email
+          pass: process.env.PASSWORD, // replace with actual password
         }
       });
 
@@ -42,8 +48,12 @@ class Room {
     // <p>This email confirms your rental of room ${this.floorNumber}-${this.roomNumber} from ${rentalInfo.startDate} to ${rentalInfo.endDate}.</p>
     // <p>Thank you for choosing our rental service.</p>`,
     html: `<h2>Dear ${rentalInfo.tenantName},</h2>
-    <p>This email confirms your rental of room in Floor  ${this.floorNumber}-room ${this.roomNumber} from ${rentalInfo.startDate} to ${rentalInfo.endDate}.</p>
-    <p>Thank you for choosing our rental service.</p>`,
+    <p>This email confirms your rental of room in  <h5> Floor  ${this.floorNumber}  Room  ${this.roomNumber} </h5>.</p>
+    <h4> start from  ${rentalInfo.startDate} and end  ${rentalInfo.endDate} </h4/>
+    <p>Thank you for choosing our rental service.</p>
+    <a> send an eamil</a>
+    
+    `,
 
   };
 
