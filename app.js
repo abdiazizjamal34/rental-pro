@@ -182,7 +182,13 @@ app.post('/api/reports/monthly', (req, res) => {
     res.json(monthlyReport);
   });
 
+
+
+  const port = process.env.PORT || 3002;
+  app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+  });
 // Start the server
-app.listen(3002, () => {
-  console.log('Rental management system server started on port 3001');
-});
+// app.listen(3002, () => {
+//   console.log('Rental management system server started on port 3001');
+// });
